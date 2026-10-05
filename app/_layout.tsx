@@ -14,6 +14,7 @@ import { Colors } from '../constants/theme';
 import { initializeDatabase } from '../services/database';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
+import { AppProvider } from '../context/AppContext';
 
 function RootNavigator() {
   const { session, loading } = useAuth();
@@ -86,9 +87,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <ThemeProvider>
-          <RootNavigator />
-        </ThemeProvider>
+        <AppProvider>
+          <ThemeProvider>
+            <RootNavigator />
+          </ThemeProvider>
+        </AppProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

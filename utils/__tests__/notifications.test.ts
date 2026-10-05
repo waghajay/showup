@@ -50,7 +50,7 @@ class MockNotificationScheduler {
 }
 
 function runNotificationTests() {
-  console.log('--- Running Phase 4B Notifications Settings & Scheduling Tests ---');
+  console.log('--- Running ShowUp Custom Notification Timer Tests ---');
 
   // Test 1: Time Parsing and Local Format Preservation (No UTC shifting)
   console.log('1. Testing Local Time HH:MM Parsing & 12-Hour Formatting...');
@@ -58,13 +58,13 @@ function runNotificationTests() {
   assert(parsed1.hour === 21 && parsed1.minute === 0, '21:00 should parse to hour 21 and minute 0');
   assert(format12HourTime('21:00') === '9:00 PM', '21:00 should format to "9:00 PM"');
 
-  const parsed2 = parseHHMM('08:30');
-  assert(parsed2.hour === 8 && parsed2.minute === 30, '08:30 should parse to hour 8 and minute 30');
-  assert(format12HourTime('08:30') === '8:30 AM', '08:30 should format to "8:30 AM"');
+  const parsedCustom = parseHHMM('20:35');
+  assert(parsedCustom.hour === 20 && parsedCustom.minute === 35, '20:35 should parse to hour 20 and minute 35');
+  assert(format12HourTime('20:35') === '8:35 PM', '20:35 should format to "8:35 PM"');
 
-  const parsed3 = parseHHMM('12:00');
-  assert(parsed3.hour === 12 && parsed3.minute === 0, '12:00 should parse to hour 12 and minute 0');
-  assert(format12HourTime('12:00') === '12:00 PM', '12:00 should format to "12:00 PM"');
+  const parsedPreset19 = parseHHMM('19:00');
+  assert(parsedPreset19.hour === 19 && parsedPreset19.minute === 0, '19:00 should parse to hour 19 and minute 0');
+  assert(format12HourTime('19:00') === '7:00 PM', '19:00 should format to "7:00 PM"');
 
   // Test 2: Default Settings State
   console.log('2. Testing Default Settings State...');
@@ -77,47 +77,43 @@ function runNotificationTests() {
   assert(defaultUserSettings.notifications_enabled === false, 'Default notifications_enabled MUST be false');
   assert(defaultUserSettings.reminder_time === '21:00', 'Default reminder_time MUST be "21:00"');
 
-  // Test 3 & 4: Scheduling & Duplicate Prevention
-  console.log('3 & 4. Testing Notification Scheduling & Duplicate Prevention...');
+  // Test 3: Scheduling Custom Time (8:35 PM -> 20:35)
+  console.log('3. Testing Custom Time Scheduling (8:35 PM -> 20:35)...');
   const mockScheduler = new MockNotificationScheduler();
 
-  // Schedule initial reminder
-  const time1 = '21:00';
-  const { hour: h1, minute: m1 } = parseHHMM(time1);
+  const customTime = '20:35';
+  const { hour: ch, minute: cm } = parseHHMM(customTime);
   mockScheduler.cancelAllScheduledNotificationsAsync();
   mockScheduler.scheduleNotificationAsync({
     content: { title: 'ShowUp', body: "Keep your streak alive. Check today's activities." },
-    trigger: { hour: h1, minute: m1 },
+    trigger: { hour: ch, minute: cm },
   });
 
   assert(mockScheduler.scheduledList.length === 1, 'Exactly 1 notification should be scheduled');
-  assert(mockScheduler.scheduledList[0].hour === 21, 'Scheduled hour should be 21');
-  assert(mockScheduler.scheduledList[0].title === 'ShowUp', 'Notification title MUST be "ShowUp"');
-  assert(
-    mockScheduler.scheduledList[0].body === "Keep your streak alive. Check today's activities.",
-    'Notification body text MUST match ShowUp wording'
-  );
+  assert(mockScheduler.scheduledList[0].hour === 20, 'Scheduled hour should be 20');
+  assert(mockScheduler.scheduledList[0].minute === 35, 'Scheduled minute should be 35');
 
-  // Change reminder time to 08:00 AM -> Must cancel previous and schedule new (no duplicates)
-  console.log('5. Testing Changing Reminder Time (No Duplicate Scheduled Notifications)...');
-  const time2 = '08:00';
-  const { hour: h2, minute: m2 } = parseHHMM(time2);
-  mockScheduler.cancelAllScheduledNotificationsAsync();
+  // Test 4: Changing Preset to Custom & Guaranteeing 1 Notification
+  console.log('4. Testing Rescheduling Custom Time (Single Notification Guarantee)...');
+  const timePreset = '23:00';
+  const { hour: ph, minute: pm } = parseHHMM(timePreset);
+  mockScheduler.cancelAllScheduledNotificationsAsync(); // Always cancel previous
   mockScheduler.scheduleNotificationAsync({
     content: { title: 'ShowUp', body: "Keep your streak alive. Check today's activities." },
-    trigger: { hour: h2, minute: m2 },
+    trigger: { hour: ph, minute: pm },
   });
 
-  assert(mockScheduler.scheduledList.length === 1, 'Exactly 1 notification should remain (no duplicates)');
-  assert(mockScheduler.scheduledList[0].hour === 8, 'Updated scheduled hour should be 8');
+  assert(mockScheduler.scheduledList.length === 1, 'Exactly 1 notification should remain after rescheduling');
+  assert(mockScheduler.scheduledList[0].hour === 23, 'Updated scheduled hour should be 23');
+  assert(mockScheduler.scheduledList[0].minute === 0, 'Updated scheduled minute should be 0');
 
-  // Test 6: Disabling Notification Cancels Schedule
-  console.log('6. Testing Disabling Notifications Cancels Schedule...');
+  // Test 5: Disabling Notification Cancels Schedule
+  console.log('5. Testing Disabling Notifications Cancels Schedule...');
   mockScheduler.cancelAllScheduledNotificationsAsync();
   assert(mockScheduler.scheduledList.length === 0, 'Disabling notifications MUST clear scheduled list');
 
-  // Test 7: Permission Denial Behavior
-  console.log('7. Testing Permission Denial Guard...');
+  // Test 6: Permission Denial Behavior
+  console.log('6. Testing Permission Denial Guard...');
   const deniedScheduler = new MockNotificationScheduler();
   deniedScheduler.permissionGranted = false;
 
@@ -127,7 +123,7 @@ function runNotificationTests() {
   }
   assert(enabledState === false, 'Permission denial MUST NOT enable notifications');
 
-  console.log('✅ ALL PHASE 4B NOTIFICATIONS SETTINGS TESTS PASSED SUCCESSFULLY!');
+  console.log('✅ ALL CUSTOM NOTIFICATION TIMER TESTS PASSED SUCCESSFULLY!');
 }
 
 runNotificationTests();

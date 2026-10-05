@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Card } from '../common/Card';
+import { CustomTimePicker } from '../common/CustomTimePicker';
 import {
   getUserSettings,
   updateUserSettings,
@@ -22,21 +23,13 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Fonts, Radii, Spacing } from '../../constants/theme';
-import { Bell, Clock, X, Check } from 'lucide-react-native';
+import { Bell, X } from 'lucide-react-native';
 
 interface NotificationSettingsModalProps {
   visible: boolean;
   onClose: () => void;
   onSettingsChanged?: () => void;
 }
-
-const PRESET_TIMES = [
-  { label: '7:00 PM', value: '19:00' },
-  { label: '8:00 PM', value: '20:00' },
-  { label: '9:00 PM', value: '21:00' },
-  { label: '10:00 PM', value: '22:00' },
-  { label: '11:00 PM', value: '23:00' },
-];
 
 export const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({
   visible,
@@ -62,7 +55,7 @@ export const NotificationSettingsModal: React.FC<NotificationSettingsModalProps>
       setEnabled(isEnabled);
       setReminderTime(settings.reminder_time || '21:00');
 
-      // If database says enabled but OS permission is revoked, sync DB safely without auto-prompting
+      // If database says enabled but OS permission is revoked, sync DB safely
       if (settings.notifications_enabled && !hasPermission) {
         await updateUserSettings(user.id, { notifications_enabled: false });
         await cancelDailyReminder();
@@ -167,7 +160,7 @@ export const NotificationSettingsModal: React.FC<NotificationSettingsModalProps>
             </View>
           ) : (
             <View style={styles.body}>
-              {/* Toggle Row */}
+              {/* Toggle Card */}
               <Card style={[styles.settingCard, { backgroundColor: colors.surface1, borderColor: colors.border }]}>
                 <View style={styles.row}>
                   <View style={styles.labelCol}>
@@ -199,49 +192,11 @@ export const NotificationSettingsModal: React.FC<NotificationSettingsModalProps>
                     !enabled ? styles.disabledCard : null,
                   ]}
                 >
-                  {PRESET_TIMES.map((item, idx) => {
-                    const isSelected = reminderTime === item.value;
-                    const isLast = idx === PRESET_TIMES.length - 1;
-
-                    return (
-                      <TouchableOpacity
-                        key={item.value}
-                        style={[
-                          styles.timeRow,
-                          !isLast && [styles.timeBorder, { borderBottomColor: colors.border }],
-                        ]}
-                        onPress={() => handleSelectTime(item.value)}
-                        disabled={!enabled || submitting}
-                        activeOpacity={0.7}
-                      >
-                        <View style={styles.timeInfo}>
-                          <Clock
-                            size={16}
-                            color={
-                              !enabled
-                                ? colors.textMuted
-                                : isSelected
-                                ? colors.primary
-                                : colors.textSecondary
-                            }
-                          />
-                          <Text
-                            style={[
-                              styles.timeText,
-                              { color: colors.textPrimary },
-                              !enabled && { color: colors.textMuted },
-                              isSelected && [styles.selectedTimeText, { color: colors.primary }],
-                            ]}
-                          >
-                            {item.label}
-                          </Text>
-                        </View>
-                        {isSelected && enabled && (
-                          <Check size={18} color={colors.primary} />
-                        )}
-                      </TouchableOpacity>
-                    );
-                  })}
+                  <CustomTimePicker
+                    selectedTime={reminderTime}
+                    onSelectTime={handleSelectTime}
+                    disabled={!enabled || submitting}
+                  />
                 </Card>
               </View>
             </View>
@@ -263,7 +218,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Radii.xl,
     padding: Spacing.gutter,
     paddingBottom: Spacing.xl * 2,
-    maxHeight: '80%',
+    maxHeight: '85%',
   },
   headerRow: {
     flexDirection: 'row',
@@ -322,26 +277,5 @@ const styles = StyleSheet.create({
     ...Fonts.typography.labelCodeSm,
     marginBottom: Spacing.xs,
     paddingLeft: 4,
-  },
-  timeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.sm + 2,
-  },
-  timeBorder: {
-    borderBottomWidth: 1,
-  },
-  timeInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  timeText: {
-    ...Fonts.typography.bodyMd,
-  },
-  selectedTimeText: {
-    ...Fonts.typography.headlineSm,
-    fontSize: 14,
   },
 });

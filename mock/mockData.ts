@@ -1,4 +1,6 @@
-import { CategoryInfo, ActivityItem, MonthData, ReportMetrics, TrendPoint, CategoryCompletionStat } from '../types/habit';
+import { CategoryInfo, ActivityItem, MonthData, ReportMetrics, TrendPoint, CategoryCompletionStat, CategoryType, RoutineItem } from '../types';
+
+export const CATEGORY_ORDER: CategoryType[] = ['PLACEMENT', 'COLLEGE', 'HEALTH', 'LIFESTYLE'];
 
 export const CATEGORIES: Record<string, CategoryInfo> = {
   PLACEMENT: {
@@ -48,6 +50,25 @@ export const INITIAL_TODAY_ACTIVITIES: ActivityItem[] = [
   { id: '11', title: 'Limit Social Media', category: 'LIFESTYLE', completed: false },
 ];
 
+export const DEFAULT_ROUTINES: RoutineItem[] = INITIAL_TODAY_ACTIVITIES.map((act) => ({
+  id: act.id,
+  title: act.title,
+  category: act.category,
+  completed: act.completed,
+  streak: act.completed ? 3 : 0,
+}));
+
+export const generateMockHeatmap = () => {
+  return [
+    { date: '2026-10-01', intensity: 3, completedCount: 9, totalCount: 11, activitiesCompleted: ['DSA', 'Study', 'Exercise', 'Sleep'], activitiesMissed: ['Reading', 'Social Media'] },
+    { date: '2026-10-02', intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All 11 completed'], activitiesMissed: [] },
+    { date: '2026-10-03', intensity: 2, completedCount: 6, totalCount: 11, activitiesCompleted: ['DSA', 'Exercise', 'Sleep'], activitiesMissed: ['Aptitude', 'Applications'] },
+    { date: '2026-10-04', intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: ['Social Media'] },
+    { date: '2026-10-05', intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['DSA', 'Aptitude', 'Dev', 'College Study', 'DBMS', 'Revision', 'Exercise', 'Sleep'], activitiesMissed: ['Job Applications', 'Reading', 'Limit Social Media'] },
+    { date: '2026-10-06', intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All completed'], activitiesMissed: [] },
+  ];
+};
+
 export const MOCK_OCTOBER_2026: MonthData = {
   monthName: 'October',
   year: 2026,
@@ -60,31 +81,6 @@ export const MOCK_OCTOBER_2026: MonthData = {
     { date: '2026-10-04', dayNumber: 4, intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: ['Social Media'] },
     { date: '2026-10-05', dayNumber: 5, intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['DSA', 'Aptitude', 'Dev', 'College Study', 'DBMS', 'Revision', 'Exercise', 'Sleep'], activitiesMissed: ['Job Applications', 'Reading', 'Limit Social Media'] },
     { date: '2026-10-06', dayNumber: 6, intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All completed'], activitiesMissed: [] },
-    { date: '2026-10-07', dayNumber: 7, intensity: 3, completedCount: 9, totalCount: 11, activitiesCompleted: ['9 completed'], activitiesMissed: ['Reading'] },
-    { date: '2026-10-08', dayNumber: 8, intensity: 2, completedCount: 5, totalCount: 11, activitiesCompleted: ['5 completed'], activitiesMissed: ['DSA', 'Applications'] },
-    { date: '2026-10-09', dayNumber: 9, intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: [] },
-    { date: '2026-10-10', dayNumber: 10, intensity: 1, completedCount: 3, totalCount: 11, activitiesCompleted: ['Sleep', 'Exercise'], activitiesMissed: ['Study', 'DSA'] },
-    { date: '2026-10-11', dayNumber: 11, intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['8 completed'], activitiesMissed: [] },
-    { date: '2026-10-12', dayNumber: 12, intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All completed'], activitiesMissed: [] },
-    { date: '2026-10-13', dayNumber: 13, intensity: 3, completedCount: 9, totalCount: 11, activitiesCompleted: ['9 completed'], activitiesMissed: [] },
-    { date: '2026-10-14', dayNumber: 14, intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: [] },
-    { date: '2026-10-15', dayNumber: 15, intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['8 completed'], activitiesMissed: [] },
-    { date: '2026-10-16', dayNumber: 16, intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All completed'], activitiesMissed: [] },
-    { date: '2026-10-17', dayNumber: 17, intensity: 2, completedCount: 6, totalCount: 11, activitiesCompleted: ['6 completed'], activitiesMissed: [] },
-    { date: '2026-10-18', dayNumber: 18, intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: [] },
-    { date: '2026-10-19', dayNumber: 19, intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['8 completed'], activitiesMissed: [] },
-    { date: '2026-10-20', dayNumber: 20, intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All completed'], activitiesMissed: [] },
-    { date: '2026-10-21', dayNumber: 21, intensity: 3, completedCount: 9, totalCount: 11, activitiesCompleted: ['9 completed'], activitiesMissed: [] },
-    { date: '2026-10-22', dayNumber: 22, intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: [] },
-    { date: '2026-10-23', dayNumber: 23, intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['8 completed'], activitiesMissed: [] },
-    { date: '2026-10-24', dayNumber: 24, intensity: 2, completedCount: 5, totalCount: 11, activitiesCompleted: ['5 completed'], activitiesMissed: [] },
-    { date: '2026-10-25', dayNumber: 25, intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All completed'], activitiesMissed: [] },
-    { date: '2026-10-26', dayNumber: 26, intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['8 completed'], activitiesMissed: [] },
-    { date: '2026-10-27', dayNumber: 27, intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: [] },
-    { date: '2026-10-28', dayNumber: 28, intensity: 3, completedCount: 9, totalCount: 11, activitiesCompleted: ['9 completed'], activitiesMissed: [] },
-    { date: '2026-10-29', dayNumber: 29, intensity: 4, completedCount: 11, totalCount: 11, activitiesCompleted: ['All completed'], activitiesMissed: [] },
-    { date: '2026-10-30', dayNumber: 30, intensity: 3, completedCount: 8, totalCount: 11, activitiesCompleted: ['8 completed'], activitiesMissed: [] },
-    { date: '2026-10-31', dayNumber: 31, intensity: 4, completedCount: 10, totalCount: 11, activitiesCompleted: ['10 completed'], activitiesMissed: [] },
   ],
 };
 
@@ -113,6 +109,22 @@ export const MOCK_CATEGORY_STATS: CategoryCompletionStat[] = [
   { category: 'HEALTH', title: 'Health & Fitness', percentage: 76, completedCount: 19, totalCount: 25, color: '#10B981' },
   { category: 'LIFESTYLE', title: 'Lifestyle Discipline', percentage: 68, completedCount: 17, totalCount: 25, color: '#F59E0B' },
 ];
+
+export const MOCK_REPORTS = {
+  overallConsistency: 88,
+  currentStreak: 14,
+  longestStreak: 28,
+  activeDays: 45,
+  totalDaysLogged: 52,
+  trendData: MOCK_TREND_POINTS.map((t) => ({ label: t.label, percentage: t.value })),
+  activityStats: MOCK_CATEGORY_STATS.map((c) => ({
+    title: c.title,
+    category: c.category,
+    completionRate: c.percentage,
+    completedDays: c.completedCount,
+    totalDays: c.totalCount,
+  })),
+};
 
 export const MOCK_SETTINGS_SECTIONS = [
   {
