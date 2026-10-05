@@ -11,43 +11,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout project
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
+      # 3. Java 17
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Check Android environment
+      # 4. Verify Java and Android SDK environment
+      - name: Check build environment
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          echo "JAVA_HOME=$JAVA_HOME"
           java -version
-          sdkmanager --version
+          ls -la "$ANDROID_HOME"
+          ls -la "$ANDROID_HOME/platform-tools" || true
+          ls -la "$ANDROID_HOME/cmdline-tools" || true
 
+      # 5. Install npm dependencies
       - name: Install dependencies
         run: npm ci
 
+      # 6. Create Supabase environment
       - name: Create environment file
         run: |
           echo "EXPO_PUBLIC_SUPABASE_URL=${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}" >> .env
           echo "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}" >> .env
 
+      # 7. Generate native Android project
       - name: Generate Android project
         run: npx expo prebuild --platform android --non-interactive
 
+      # 8. Build release APK
       - name: Build release APK
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon
 
+      # 9. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
